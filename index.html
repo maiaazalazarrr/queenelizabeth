@@ -6,7 +6,7 @@
   <title>Queen Elizabeth — Academia de Inglés Británico Premium</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2 family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -17,7 +17,7 @@
 <nav class="nav" id="nav">
   <div class="nav__inner">
     <a href="#" class="nav__logo" onclick="showPage('landing')">
-      <span class="nav__logo-crown">♛</span>
+      <span class="nav__logo-crown" aria-hidden="true">♛</span>
       <span class="nav__logo-text">Queen <em>Elizabeth</em></span>
     </a>
     <ul class="nav__links" id="navLinks">
@@ -30,7 +30,7 @@
       <button class="btn btn--ghost" onclick="showPage('dashboard')">Mi Cuenta</button>
       <button class="btn btn--primary" onclick="showPage('landing'); scrollToSection('cta-section')">Comenzar</button>
     </div>
-    <button class="nav__hamburger" id="hamburger" aria-label="Menú">
+    <button class="nav__hamburger" id="hamburger" aria-label="Abrir menú de navegación">
       <span></span><span></span><span></span>
     </button>
   </div>
@@ -42,11 +42,11 @@
 <div id="page-landing" class="page active">
 
   <!-- HERO -->
-  <section class="hero">
+  <header class="hero">
     <div class="hero__bg-pattern"></div>
     <div class="hero__content">
       <div class="hero__eyebrow">
-        <span class="hero__flag">🇬🇧</span>
+        <span class="hero__flag" role="img" aria-label="Bandera del Reino Unido">🇬🇧</span>
         <span>Academia Premium · Fundada en Londres</span>
       </div>
       <h1 class="hero__title">
@@ -80,7 +80,7 @@
       <div class="hero__crest">
         <div class="crest__outer">
           <div class="crest__inner">
-            <span class="crest__crown">♛</span>
+            <span class="crest__crown" aria-hidden="true">♛</span>
             <span class="crest__text">AUCTORITATE</span>
             <span class="crest__text crest__text--bottom">BRITANNIAE</span>
           </div>
@@ -88,7 +88,7 @@
         <div class="crest__ribbon">Est. MMXV · London</div>
       </div>
     </div>
-  </section>
+  </header>
 
   <!-- METODOLOGÍA BRITÁNICA -->
   <section class="section metodologia" id="metodologia">
@@ -100,8 +100,8 @@
       </div>
 
       <div class="metod__grid">
-        <div class="metod__card metod__card--featured">
-          <div class="metod__icon">🎙️</div>
+        <article class="metod__card metod__card--featured">
+          <div class="metod__icon" role="img" aria-label="Micrófono">🎙️</div>
           <h3>Received Pronunciation</h3>
           <p>Aprende la pronunciación estándar del inglés de la BBC y las universidades de Oxford y Cambridge — la variante más reconocida y respetada a nivel internacional.</p>
           <ul class="metod__list">
@@ -109,32 +109,32 @@
             <li>El "th" suave y la "r" no rótica</li>
             <li>Entonación y ritmo del discurso formal</li>
           </ul>
-        </div>
-        <div class="metod__card">
-          <div class="metod__icon">📚</div>
+        </article>
+        <article class="metod__card">
+          <div class="metod__icon" role="img" aria-label="Libros">📚</div>
           <h3>Literatura y Medios</h3>
           <p>Lecturas de Dickens, Austen y Orwell. Podcast originales de la BBC. Transcripciones del Parlamento. El idioma vivo en sus mejores manifestaciones.</p>
-        </div>
-        <div class="metod__card">
-          <div class="metod__icon">🏛️</div>
+        </article>
+        <article class="metod__card">
+          <div class="metod__icon" role="img" aria-label="Templo clásico">🏛️</div>
           <h3>Contexto Cultural</h3>
           <p>El vocabulario, las expresiones idiomáticas y la etiqueta comunicativa que realmente se usan en el Reino Unido — en el trabajo, la academia y la vida diaria.</p>
-        </div>
-        <div class="metod__card">
-          <div class="metod__icon">⚖️</div>
+        </article>
+        <article class="metod__card">
+          <div class="metod__icon" role="img" aria-label="Balanza">⚖️</div>
           <h3>RP vs. Americano</h3>
           <p>Aprenderás de forma sistemática las diferencias en ortografía (colour/color), vocabulario (lift/elevator) y gramática — para comunicarte con precisión en cualquier contexto.</p>
-        </div>
-        <div class="metod__card">
-          <div class="metod__icon">🎓</div>
+        </article>
+        <article class="metod__card">
+          <div class="metod__icon" role="img" aria-label="Birrete de graduación">🎓</div>
           <h3>Marcos MCER A1–C2</h3>
           <p>Contenido perfectamente alineado con el Marco Común Europeo de Referencia. Progresión clara, objetivos medibles y certificación al completar cada nivel.</p>
-        </div>
-        <div class="metod__card">
-          <div class="metod__icon">🤝</div>
+        </article>
+        <article class="metod__card">
+          <div class="metod__icon" role="img" aria-label="Apretón de manos">🤝</div>
           <h3>Tutoría Personal</h3>
           <p>Cada estudiante tiene acceso a sesiones 1 a 1 con tutores nativos del Reino Unido para práctica conversacional, revisión de pronunciación y guía personalizada.</p>
-        </div>
+        </article>
       </div>
 
       <!-- COMPARATIVA UK vs USA -->
@@ -142,16 +142,16 @@
         <h3 class="compare__title">¿Inglés Británico o Americano?</h3>
         <div class="compare__table">
           <div class="compare__col compare__col--uk">
-            <div class="compare__label"><span>🇬🇧</span> Inglés Británico (RP)</div>
+            <div class="compare__label"><span role="img" aria-label="Bandera de Reino Unido">🇬🇧</span> Inglés Británico (RP)</div>
             <div class="compare__row">colour · honour · favour</div>
             <div class="compare__row">lift · flat · post</div>
             <div class="compare__row">Have you eaten yet?</div>
             <div class="compare__row">I've just arrived</div>
             <div class="compare__row">at the weekend</div>
           </div>
-          <div class="compare__vs">VS</div>
+          <div class="compare__vs" aria-hidden="true">VS</div>
           <div class="compare__col compare__col--us">
-            <div class="compare__label"><span>🇺🇸</span> Inglés Americano</div>
+            <div class="compare__label"><span role="img" aria-label="Bandera de Estados Unidos">🇺🇸</span> Inglés Americano</div>
             <div class="compare__row">color · honor · favor</div>
             <div class="compare__row">elevator · apartment · mail</div>
             <div class="compare__row">Did you eat yet?</div>
@@ -232,11 +232,11 @@
         <p class="section__desc">Cada tutor es nativo del RU, con formación pedagógica certificada y pasión por transmitir la riqueza del inglés británico.</p>
       </div>
       <div class="tutores__grid">
-        <div class="tutor__card">
+        <article class="tutor__card">
           <div class="tutor__avatar tutor__avatar--1">
             <span class="tutor__initials">EH</span>
           </div>
-          <div class="tutor__flag">🏴󠁧󠁢󠁥󠁮󠁧󠁿</div>
+          <div class="tutor__flag" role="img" aria-label="Bandera de Inglaterra">🏴󠁧󠁢󠁥󠁮󠁧󠁿</div>
           <h3 class="tutor__name">Eleanor Hartley</h3>
           <span class="tutor__origin">Oxford, England</span>
           <p class="tutor__bio">MA en Lingüística Aplicada, Universidad de Oxford. Especialista en Received Pronunciation y preparación para Cambridge IELTS.</p>
@@ -245,12 +245,12 @@
             <span>IELTS</span>
             <span>Literatura</span>
           </div>
-        </div>
-        <div class="tutor__card">
+        </article>
+        <article class="tutor__card">
           <div class="tutor__avatar tutor__avatar--2">
             <span class="tutor__initials">JM</span>
           </div>
-          <div class="tutor__flag">🏴󠁧󠁢󠁳󠁣󠁴󠁿</div>
+          <div class="tutor__flag" role="img" aria-label="Bandera de Escocia">🏴󠁧󠁢󠁳󠁣󠁴󠁿</div>
           <h3 class="tutor__name">James MacAllister</h3>
           <span class="tutor__origin">Edinburgh, Scotland</span>
           <p class="tutor__bio">Licenciado en Literatura Inglesa por la Universidad de Edimburgo. 8 años de experiencia enseñando en academias premium de Europa.</p>
@@ -259,12 +259,12 @@
             <span>Business English</span>
             <span>Debate</span>
           </div>
-        </div>
-        <div class="tutor__card">
+        </article>
+        <article class="tutor__card">
           <div class="tutor__avatar tutor__avatar--3">
             <span class="tutor__initials">SC</span>
           </div>
-          <div class="tutor__flag">🏴󠁧󠁢󠁷󠁬󠁳󠁿</div>
+          <div class="tutor__flag" role="img" aria-label="Bandera de Gales">🏴󠁧󠁢󠁷󠁬󠁳󠁿</div>
           <h3 class="tutor__name">Sophie Clarke</h3>
           <span class="tutor__origin">Cardiff, Wales</span>
           <p class="tutor__bio">Certificada CELTA, ex-corresponsal de la BBC. Aporta el idioma vivo de los medios británicos a sus clases con una pedagogía dinámica y creativa.</p>
@@ -273,12 +273,12 @@
             <span>Conversación</span>
             <span>Medios</span>
           </div>
-        </div>
-        <div class="tutor__card">
+        </article>
+        <article class="tutor__card">
           <div class="tutor__avatar tutor__avatar--4">
             <span class="tutor__initials">RB</span>
           </div>
-          <div class="tutor__flag">🇬🇧</div>
+          <div class="tutor__flag" role="img" aria-label="Bandera del Reino Unido">🇬🇧</div>
           <h3 class="tutor__name">Richard Bennett</h3>
           <span class="tutor__origin">London, England</span>
           <p class="tutor__bio">Doctorado en Fonética por la Universidad de Londres. Investigador de RP y autor de "The Sound of Britain", libro de referencia en pronunciación.</p>
@@ -287,7 +287,7 @@
             <span>Académico</span>
             <span>C1/C2</span>
           </div>
-        </div>
+        </article>
       </div>
     </div>
   </section>
@@ -303,42 +303,42 @@
       <div class="badges__showcase">
         <div class="badge__item" data-tooltip="Completar el nivel A1">
           <div class="badge__medal badge__medal--bronze">
-            <span class="badge__icon">🌱</span>
+            <span class="badge__icon" role="img" aria-label="Brote verde">🌱</span>
           </div>
           <span class="badge__name">The Newcomer</span>
           <span class="badge__level">A1 Complete</span>
         </div>
         <div class="badge__item" data-tooltip="Primera sesión con tutor nativo">
           <div class="badge__medal badge__medal--silver">
-            <span class="badge__icon">🎙️</span>
+            <span class="badge__icon" role="img" aria-label="Micrófono">🎙️</span>
           </div>
           <span class="badge__name">The Orator</span>
           <span class="badge__level">First Tutor Session</span>
         </div>
         <div class="badge__item badge__item--featured" data-tooltip="Completar los 6 niveles MCER">
           <div class="badge__medal badge__medal--gold">
-            <span class="badge__icon">♛</span>
+            <span class="badge__icon" aria-hidden="true">♛</span>
           </div>
           <span class="badge__name">The Royal Scholar</span>
           <span class="badge__level">C2 Mastery</span>
         </div>
         <div class="badge__item" data-tooltip="7 días de práctica consecutivos">
           <div class="badge__medal badge__medal--silver">
-            <span class="badge__icon">🔥</span>
+            <span class="badge__icon" role="img" aria-label="Fuego">🔥</span>
           </div>
           <span class="badge__name">The Devoted</span>
           <span class="badge__level">7-Day Streak</span>
         </div>
         <div class="badge__item" data-tooltip="Pronunciación perfecta en 10 ejercicios">
           <div class="badge__medal badge__medal--bronze">
-            <span class="badge__icon">🗣️</span>
+            <span class="badge__icon" role="img" aria-label="Cabeza hablando">🗣️</span>
           </div>
           <span class="badge__name">The Speaker</span>
           <span class="badge__level">RP Mastery</span>
         </div>
         <div class="badge__item" data-tooltip="Completar todos los British Culture Tips">
           <div class="badge__medal badge__medal--gold">
-            <span class="badge__icon">🏛️</span>
+            <span class="badge__icon" role="img" aria-label="Templo clásico">🏛️</span>
           </div>
           <span class="badge__name">The Culturist</span>
           <span class="badge__level">All Culture Tips</span>
@@ -356,7 +356,7 @@
       </div>
       <div class="test__grid">
         <div class="test__card">
-          <div class="test__stars">★★★★★</div>
+          <div class="test__stars" aria-label="Calificación de 5 estrellas">★★★★★</div>
           <blockquote class="test__quote">"Después de 6 meses con Queen Elizabeth, conseguí el trabajo de mis sueños en una firma de abogados con sede en Londres. Mi entrevistador dijo que mi inglés era 'impeccably British'."</blockquote>
           <div class="test__author">
             <div class="test__avatar test__avatar--1"></div>
@@ -365,10 +365,10 @@
               <span>Bogotá, Colombia · Nivel C1</span>
             </div>
           </div>
-          <div class="test__badge-earned">🏆 Royal Scholar Badge</div>
+          <div class="test__badge-earned"><span role="img" aria-label="Trofeo">🏆</span> Royal Scholar Badge</div>
         </div>
         <div class="test__card test__card--featured">
-          <div class="test__stars">★★★★★</div>
+          <div class="test__stars" aria-label="Calificación de 5 estrellas">★★★★★</div>
           <blockquote class="test__quote">"La diferencia con otras academias es abismal. Aquí aprendes el inglés que realmente se habla en la BBC, en el Parlamento y en las universidades más prestigiosas del mundo."</blockquote>
           <div class="test__author">
             <div class="test__avatar test__avatar--2"></div>
@@ -377,10 +377,10 @@
               <span>Ciudad de México · Nivel B2</span>
             </div>
           </div>
-          <div class="test__badge-earned">🎙️ The Orator Badge</div>
+          <div class="test__badge-earned"><span role="img" aria-label="Micrófono">🎙️</span> The Orator Badge</div>
         </div>
         <div class="test__card">
-          <div class="test__stars">★★★★★</div>
+          <div class="test__stars" aria-label="Calificación de 5 estrellas">★★★★★</div>
           <blockquote class="test__quote">"Mis hijos estudian con Queen Elizabeth desde nivel A1. La tutora Eleanor es extraordinaria — los niños aman cada clase y ya pueden ver películas en inglés sin subtítulos."</blockquote>
           <div class="test__author">
             <div class="test__avatar test__avatar--3"></div>
@@ -389,7 +389,7 @@
               <span>Buenos Aires, Argentina · Nivel A2/B1</span>
             </div>
           </div>
-          <div class="test__badge-earned">🌱 The Newcomer Badge</div>
+          <div class="test__badge-earned"><span role="img" aria-label="Brote verde">🌱</span> The Newcomer Badge</div>
         </div>
       </div>
     </div>
@@ -399,12 +399,12 @@
   <section class="section cta-section" id="cta-section">
     <div class="container">
       <div class="cta__inner">
-        <span class="cta__crown">♛</span>
+        <span class="cta__crown" aria-hidden="true">♛</span>
         <h2 class="cta__title">Tu acento cambia.<br/><em>Tu mundo también.</em></h2>
         <p class="cta__desc">Únete a más de 4,200 estudiantes que ya hablan el inglés de Oxford, la BBC y el West End. Primera semana sin costo.</p>
         <div class="cta__plans">
           <div class="plan__card">
-            <div class="plan__name">Explorer</div>
+            <h3 class="plan__name">Explorer</h3>
             <div class="plan__price"><span>$</span>29<span>/mes</span></div>
             <ul class="plan__features">
               <li>✓ Acceso a niveles A1–B1</li>
@@ -416,7 +416,7 @@
           </div>
           <div class="plan__card plan__card--featured">
             <div class="plan__badge-featured">⭐ Más Popular</div>
-            <div class="plan__name">Scholar</div>
+            <h3 class="plan__name">Scholar</h3>
             <div class="plan__price"><span>$</span>59<span>/mes</span></div>
             <ul class="plan__features">
               <li>✓ Acceso completo A1–C2</li>
@@ -429,7 +429,7 @@
             <button class="btn btn--primary btn--plan">Unirme al Scholar</button>
           </div>
           <div class="plan__card">
-            <div class="plan__name">Royal</div>
+            <h3 class="plan__name">Royal</h3>
             <div class="plan__price"><span>$</span>99<span>/mes</span></div>
             <ul class="plan__features">
               <li>✓ Todo lo de Scholar</li>
@@ -454,9 +454,9 @@
           <span class="footer__logo">♛ Queen <em>Elizabeth</em></span>
           <p>Academia premium de inglés británico. Metodología RP auténtica, tutores nativos del Reino Unido y una comunidad global de estudiantes excelentes.</p>
           <div class="footer__social">
-            <a href="#" aria-label="Twitter">𝕏</a>
-            <a href="#" aria-label="Instagram">📷</a>
-            <a href="#" aria-label="YouTube">▶</a>
+            <a href="#" aria-label="Visitar nuestro perfil de Twitter">𝕏</a>
+            <a href="#" aria-label="Visitar nuestro perfil de Instagram">📷</a>
+            <a href="#" aria-label="Visitar nuestro canal de YouTube">▶</a>
           </div>
         </div>
         <div class="footer__links">
@@ -482,7 +482,7 @@
         </div>
       </div>
       <div class="footer__bottom">
-        <p>© 2025 Queen Elizabeth Academy · London · Todos los derechos reservados.</p>
+        <p>© 2026 Queen Elizabeth Academy · London · Todos los derechos reservados.</p>
         <div class="footer__certifications">
           <span>🎓 Cambridge Affiliate</span>
           <span>📜 MCER Certified</span>
@@ -508,40 +508,40 @@
           <span>Nivel B1 · Scholar</span>
         </div>
       </div>
-      <nav class="sidebar__nav">
+      <nav class="sidebar__nav" aria-label="Menú del estudiante">
         <a href="#" class="sidebar__link sidebar__link--active" data-section="overview">
-          <span class="sidebar__icon">⊞</span> Resumen
+          <span class="sidebar__icon" aria-hidden="true">⊞</span> Resumen
         </a>
         <a href="#" class="sidebar__link" data-section="lessons" onclick="showPage('leccion')">
-          <span class="sidebar__icon">📖</span> Mis Lecciones
+          <span class="sidebar__icon" aria-hidden="true">📖</span> Mis Lecciones
         </a>
         <a href="#" class="sidebar__link" data-section="live">
-          <span class="sidebar__icon">🎥</span> Clases en Vivo
+          <span class="sidebar__icon" aria-hidden="true">🎥</span> Clases en Vivo
         </a>
         <a href="#" class="sidebar__link" data-section="library">
-          <span class="sidebar__icon">🎧</span> Biblioteca
+          <span class="sidebar__icon" aria-hidden="true">🎧</span> Biblioteca
         </a>
         <a href="#" class="sidebar__link" data-section="materiales" onclick="showPage('materiales')">
-          <span class="sidebar__icon">📂</span> Materiales
+          <span class="sidebar__icon" aria-hidden="true">📂</span> Materiales
         </a>
         <a href="#" class="sidebar__link" data-section="admin" onclick="showPage('admin')">
-          <span class="sidebar__icon">🛠️</span> Panel Docente
+          <span class="sidebar__icon" aria-hidden="true">🛠️</span> Panel Docente
         </a>
         <a href="https://classroom.google.com" target="_blank" rel="noopener" class="sidebar__link">
-          <span class="sidebar__icon">🔗</span> Ir a Moodle/Classroom
+          <span class="sidebar__icon" aria-hidden="true">🔗</span> Ir a Moodle/Classroom
         </a>
         <a href="#" class="sidebar__link" data-section="tutoring">
-          <span class="sidebar__icon">📅</span> Tutorías
+          <span class="sidebar__icon" aria-hidden="true">📅</span> Tutorías
         </a>
         <a href="#" class="sidebar__link" data-section="community">
-          <span class="sidebar__icon">💬</span> Comunidad
+          <span class="sidebar__icon" aria-hidden="true">💬</span> Comunidad
         </a>
         <a href="#" class="sidebar__link" data-section="badges">
-          <span class="sidebar__icon">🏅</span> Royal Badges
+          <span class="sidebar__icon" aria-hidden="true">🏅</span> Royal Badges
         </a>
       </nav>
       <div class="sidebar__streak">
-        <div class="streak__flame">🔥</div>
+        <div class="streak__flame" role="img" aria-label="Fuego">🔥</div>
         <div>
           <strong>12 días seguidos</strong>
           <span>Sigue así — ¡te faltan 2 días para el badge!</span>
@@ -554,7 +554,7 @@
       <!-- HEADER -->
       <div class="dash__header">
         <div>
-          <h1 class="dash__title">Good morning, Valentina ☀️</h1>
+          <h1 class="dash__title">Good morning, Valentina <span role="img" aria-label="Sol">☀️</span></h1>
           <p class="dash__subtitle">Tienes 2 lecciones pendientes y una tutoría con Eleanor esta tarde a las 18:00.</p>
         </div>
         <button class="btn btn--primary" onclick="showPage('leccion')">Continuar Lección →</button>
@@ -563,20 +563,20 @@
       <!-- PROGRESS OVERVIEW -->
       <div class="dash__cards">
         <div class="dash__card">
-          <div class="dash__card-icon">📈</div>
+          <div class="dash__card-icon" role="img" aria-label="Gráfica de crecimiento">📈</div>
           <div class="dash__card-info">
             <span class="dash__card-label">Progreso Global</span>
             <span class="dash__card-value">47%</span>
           </div>
           <div class="progress__ring">
-            <svg viewBox="0 0 36 36">
+            <svg viewBox="0 0 36 36" aria-label="Gráfico circular de progreso al 47%">
               <circle class="progress__ring-bg" cx="18" cy="18" r="15.9" />
               <circle class="progress__ring-fill" cx="18" cy="18" r="15.9" stroke-dasharray="47 53" />
             </svg>
           </div>
         </div>
         <div class="dash__card">
-          <div class="dash__card-icon">⏱️</div>
+          <div class="dash__card-icon" role="img" aria-label="Cronómetro">⏱️</div>
           <div class="dash__card-info">
             <span class="dash__card-label">Horas de Estudio</span>
             <span class="dash__card-value">34h</span>
@@ -584,7 +584,7 @@
           <div class="dash__card-trend">+3h esta semana</div>
         </div>
         <div class="dash__card">
-          <div class="dash__card-icon">🏅</div>
+          <div class="dash__card-icon" role="img" aria-label="Medalla militar">🏅</div>
           <div class="dash__card-info">
             <span class="dash__card-label">Royal Badges</span>
             <span class="dash__card-value">5 / 18</span>
@@ -592,7 +592,7 @@
           <div class="dash__card-trend">2 cerca de ganar</div>
         </div>
         <div class="dash__card">
-          <div class="dash__card-icon">🎙️</div>
+          <div class="dash__card-icon" role="img" aria-label="Micrófono">🎙️</div>
           <div class="dash__card-info">
             <span class="dash__card-label">Precisión RP</span>
             <span class="dash__card-value">78%</span>
@@ -602,35 +602,35 @@
       </div>
 
       <!-- ESTADÍSTICAS REALES (datos de Supabase, no simulados) -->
-      <div class="dash__panel" id="realStatsPanel">
+      <section class="dash__panel" id="realStatsPanel">
         <div class="panel__header">
           <h3>📊 Estadísticas Reales</h3>
           <span id="statsUpdatedAt" style="font-size:.75rem;opacity:.6"></span>
         </div>
         <div class="dash__cards">
           <div class="dash__card">
-            <div class="dash__card-icon">💰</div>
+            <div class="dash__card-icon" role="img" aria-label="Bolsa de dinero">💰</div>
             <div class="dash__card-info">
               <span class="dash__card-label">Ingresos (pagados)</span>
               <span class="dash__card-value" id="statRevenue">—</span>
             </div>
           </div>
           <div class="dash__card">
-            <div class="dash__card-icon">🧾</div>
+            <div class="dash__card-icon" role="img" aria-label="Factura">🧾</div>
             <div class="dash__card-info">
               <span class="dash__card-label">Ventas / Inscripciones</span>
               <span class="dash__card-value" id="statSalesCount">—</span>
             </div>
           </div>
           <div class="dash__card">
-            <div class="dash__card-icon">🎓</div>
+            <div class="dash__card-icon" role="img" aria-label="Birrete de graduación">🎓</div>
             <div class="dash__card-info">
               <span class="dash__card-label">Alumnos únicos</span>
               <span class="dash__card-value" id="statStudents">—</span>
             </div>
           </div>
           <div class="dash__card">
-            <div class="dash__card-icon">📂</div>
+            <div class="dash__card-icon" role="img" aria-label="Carpeta abierta">📂</div>
             <div class="dash__card-info">
               <span class="dash__card-label">Vistas/descargas de materiales</span>
               <span class="dash__card-value" id="statMaterialEvents">—</span>
@@ -638,7 +638,7 @@
           </div>
         </div>
         <div id="statTopMaterials" style="margin-top:1rem;font-size:.9rem"></div>
-      </div>
+      </section>
 
       <!-- NIVEL PROGRESS BAR -->
       <div class="level__progress">
@@ -647,7 +647,7 @@
           <span class="level__xp">1,240 / 2,000 XP</span>
         </div>
         <div class="level__bar">
-          <div class="level__bar-fill" style="width: 62%"></div>
+          <div class="level__bar-fill" style="width: 62%" aria-label="62% de experiencia completada"></div>
         </div>
         <div class="level__milestones">
           <span>A1</span><span>A2</span><span class="milestone--done">B1 ●</span><span>B2</span><span>C1</span><span>C2</span>
@@ -665,7 +665,7 @@
           </div>
           <div class="lesson__list">
             <div class="lesson__item lesson__item--active" onclick="showPage('leccion')">
-              <div class="lesson__thumb">📖</div>
+              <div class="lesson__thumb" role="img" aria-label="Libro abierto">📖</div>
               <div class="lesson__info">
                 <strong>The British Vowel System</strong>
                 <span>B1 · Pronunciación · 15 min</span>
@@ -674,7 +674,7 @@
               <span class="lesson__status lesson__status--progress">40%</span>
             </div>
             <div class="lesson__item" onclick="showPage('leccion')">
-              <div class="lesson__thumb">🗣️</div>
+              <div class="lesson__thumb" role="img" aria-label="Cabeza hablando">🗣️</div>
               <div class="lesson__info">
                 <strong>Idiomatic British Expressions</strong>
                 <span>B1 · Vocabulario · 20 min</span>
@@ -683,7 +683,7 @@
               <span class="lesson__status lesson__status--new">Nuevo</span>
             </div>
             <div class="lesson__item">
-              <div class="lesson__thumb">🏛️</div>
+              <div class="lesson__thumb" role="img" aria-label="Templo clásico">🏛️</div>
               <div class="lesson__info">
                 <strong>The Monarchy & Modern Britain</strong>
                 <span>B1 · Cultura · 12 min</span>
@@ -692,7 +692,7 @@
               <span class="lesson__status lesson__status--done">✓</span>
             </div>
             <div class="lesson__item">
-              <div class="lesson__thumb">📰</div>
+              <div class="lesson__thumb" role="img" aria-label="Periódico">📰</div>
               <div class="lesson__info">
                 <strong>Reading the BBC — News English</strong>
                 <span>B1 · Comprensión · 25 min</span>
@@ -748,21 +748,21 @@
             </div>
             <div class="library__list">
               <div class="library__item">
-                <span class="library__icon">🎧</span>
+                <span class="library__icon" role="img" aria-label="Auriculares">🎧</span>
                 <div>
                   <strong>BBC Radio 4 Digest</strong>
                   <span>Audio · 18 min · B1</span>
                 </div>
               </div>
               <div class="library__item">
-                <span class="library__icon">📄</span>
+                <span class="library__icon" role="img" aria-label="Documento de texto">📄</span>
                 <div>
                   <strong>Pride and Prejudice — Chapter 1</strong>
                   <span>Texto anotado · A. Austen · B2</span>
                 </div>
               </div>
               <div class="library__item">
-                <span class="library__icon">🎬</span>
+                <span class="library__icon" role="img" aria-label="Claqueta de cine">🎬</span>
                 <div>
                   <strong>The Crown — Script Extract</strong>
                   <span>Guión · Netflix/ITV · B1</span>
@@ -801,15 +801,15 @@
             <span>Brit Culture</span>
           </div>
           <div class="mybadge locked">
-            <div class="mybadge__medal locked">🔒</div>
+            <div class="mybadge__medal locked" title="Bloqueado">🔒</div>
             <span>Speaker</span>
           </div>
           <div class="mybadge locked">
-            <div class="mybadge__medal locked">🔒</div>
+            <div class="mybadge__medal locked" title="Bloqueado">🔒</div>
             <span>Scholar</span>
           </div>
           <div class="mybadge locked">
-            <div class="mybadge__medal locked">🔒</div>
+            <div class="mybadge__medal locked" title="Bloqueado">🔒</div>
             <span>Royal</span>
           </div>
         </div>
@@ -833,7 +833,7 @@
         <h2 class="lesson__sidebar-title">The British Vowel System</h2>
         <p class="lesson__sidebar-desc">Domina las 20 vocales del inglés RP y distingue tu habla como un nativo del Reino Unido.</p>
       </div>
-      <div class="lesson__outline">
+      <nav class="lesson__outline" aria-label="Estructura de la lección">
         <div class="outline__item outline__item--done" data-step="0">
           <span class="outline__num">✓</span>
           <span>Introducción al Tópico</span>
@@ -850,7 +850,7 @@
           <span class="outline__num">4</span>
           <span>British Culture Tip</span>
         </div>
-      </div>
+      </nav>
       <div class="lesson__progress-info">
         <div class="lesson__progress-label">
           <span>Progreso de lección</span>
@@ -874,7 +874,7 @@
         <div class="step__body">
           <p class="step__intro">Bienvenido a una de las lecciones más importantes del inglés RP: el sistema vocálico. A diferencia del inglés americano, el inglés británico posee <strong>20 sonidos vocálicos</strong> distintos — incluyendo vocales largas, cortas y diptongos que no existen en español.</p>
           <div class="info__box">
-            <span class="info__icon">💡</span>
+            <span class="info__icon" role="img" aria-label="Bombilla inteligente">💡</span>
             <div>
               <strong>¿Por qué importa?</strong>
               <p>La distinción entre vocales largas y cortas en inglés RP es fonémica — significa que <em>ship</em> y <em>sheep</em>, o <em>bit</em> y <em>beat</em>, son palabras completamente distintas. Dominar esto transforma tu pronunciación.</p>
@@ -1012,7 +1012,7 @@
                 <button class="grammar__btn" onclick="checkGrammar(this, true)">"organise"</button>
               </div>
               <div class="grammar__explanation" style="display:none">
-                <span>✓ Correcto. El inglés británico usa "-ise" en muchos verbos (organise, recognise, apologise) mientras el americano usa "-ize".</span>
+                <span>✓ Correcto. El inglés británico usa "-ise" en many verbos (organise, recognise, apologise) mientras el americano usa "-ize".</span>
               </div>
             </div>
             <div class="grammar__ex">
@@ -1036,9 +1036,9 @@
           <h2>🇬🇧 British Culture Tip</h2>
         </div>
         <div class="step__body">
-          <div class="culture__card">
+          <article class="culture__card">
             <div class="culture__header">
-              <span class="culture__icon">☕</span>
+              <span class="culture__icon" role="img" aria-label="Taza de té o café">☕</span>
               <h3>The Art of the British Apology</h3>
             </div>
             <p>Los británicos se disculpan con una frecuencia que sorprende a los hispanohablantes. Si alguien te pisa el pie en el metro de Londres, es probable que <em>tú</em> te disculpes primero. "Sorry" en inglés británico no es solo disculpa — es lubricante social, marcador de cortesía y, en ocasiones, expresión de desacuerdo educado.</p>
@@ -1059,26 +1059,26 @@
             <div class="culture__tip-footer">
               <span>💡 Pro tip:</span> En entornos formales británicos, dominar el arte de la disculpa estratégica te posiciona como un hablante verdaderamente sofisticado.
             </div>
-          </div>
+          </article>
 
           <!-- LESSON COMPLETE -->
           <div class="lesson__complete" id="lessonComplete" style="display:none">
             <div class="complete__seal">
-              <span class="complete__crown">♛</span>
+              <span class="complete__crown" aria-hidden="true">♛</span>
             </div>
             <h3>Lección Completada</h3>
             <p>Has ganado <strong>80 XP</strong> y has avanzado hacia el badge <em>The Speaker</em>.</p>
             <div class="complete__badges">
               <div class="complete__badge-earned">
-                <span>🗣️</span>
+                <span role="img" aria-label="Cabeza hablando">🗣️</span>
                 <small>+12 pts RP</small>
               </div>
               <div class="complete__badge-earned">
-                <span>📖</span>
+                <span role="img" aria-label="Libro abierto">📖</span>
                 <small>+80 XP</small>
               </div>
               <div class="complete__badge-earned">
-                <span>🔥</span>
+                <span role="img" aria-label="Fuego">🔥</span>
                 <small>Racha: 13</small>
               </div>
             </div>
@@ -1094,10 +1094,10 @@
       <div class="lesson__nav">
         <button class="btn btn--ghost" id="prevBtn" onclick="navigateLesson(-1)" disabled>← Anterior</button>
         <div class="lesson__step-dots">
-          <span class="dot dot--done" onclick="goToStep(0)"></span>
-          <span class="dot dot--active" onclick="goToStep(1)"></span>
-          <span class="dot" onclick="goToStep(2)"></span>
-          <span class="dot" onclick="goToStep(3)"></span>
+          <span class="dot" onclick="goToStep(0)" aria-label="Ir al paso 1"></span>
+          <span class="dot dot--active" onclick="goToStep(1)" aria-label="Paso 2 actual"></span>
+          <span class="dot" onclick="goToStep(2)" aria-label="Ir al paso 3"></span>
+          <span class="dot" onclick="goToStep(3)" aria-label="Ir al paso 4"></span>
         </div>
         <button class="btn btn--primary" id="nextBtn" onclick="navigateLesson(1)">Siguiente →</button>
       </div>
@@ -1115,7 +1115,9 @@
       <button class="lesson__back" onclick="showPage('dashboard')">← Volver al Dashboard</button>
       <div style="margin-top:1.5rem">
         <strong style="display:block;margin-bottom:.5rem">Identificarte (opcional)</strong>
+        <label for="matStudentName" class="sr-only">Tu nombre</label>
         <input id="matStudentName" type="text" placeholder="Tu nombre" style="width:100%;margin-bottom:.5rem;padding:.5rem;border-radius:8px;border:1px solid #ccc">
+        <label for="matStudentEmail" class="sr-only">Tu email</label>
         <input id="matStudentEmail" type="email" placeholder="Tu email" style="width:100%;margin-bottom:.5rem;padding:.5rem;border-radius:8px;border:1px solid #ccc">
         <button class="btn btn--ghost btn--sm" onclick="saveStudentIdentity()">Guardar</button>
       </div>
@@ -1154,6 +1156,7 @@
       <div id="adminGate" class="dash__panel">
         <h3>Acceso docente</h3>
         <p>Ingresá el código de acceso para gestionar materiales.</p>
+        <label for="adminCode" class="sr-only">Código de acceso</label>
         <input id="adminCode" type="password" placeholder="Código de acceso" style="padding:.5rem;border-radius:8px;border:1px solid #ccc;margin-right:.5rem">
         <button class="btn btn--primary btn--sm" onclick="unlockAdmin()">Entrar</button>
       </div>
@@ -1164,10 +1167,10 @@
           <h3>1. Crear Curso</h3>
           <p style="opacity:.8;font-size:.9rem">Un curso es el "paquete" general, por ejemplo "Inglés para Viajes" o "Pronunciación RP Básica".</p>
           <form onsubmit="handleCreateCourse(event)" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end">
-            <label>Nombre del curso<br>
+            <label for="newCourseTitle">Nombre del curso<br>
               <input id="newCourseTitle" type="text" required style="padding:.5rem;border-radius:8px;border:1px solid #ccc;min-width:240px">
             </label>
-            <label>Nivel<br>
+            <label for="newCourseLevel">Nivel<br>
               <select id="newCourseLevel" style="padding:.5rem;border-radius:8px;border:1px solid #ccc">
                 <option>A1</option><option>A2</option><option selected>B1</option><option>B2</option><option>C1</option><option>C2</option>
               </select>
@@ -1181,13 +1184,13 @@
           <h3>2. Crear Lección</h3>
           <p style="opacity:.8;font-size:.9rem">Una lección es una unidad corta dentro del curso, por ejemplo "Check-in en el aeropuerto". Ahí es donde después subís los materiales.</p>
           <form onsubmit="handleCreateLesson(event)" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end">
-            <label>Curso<br>
+            <label for="newLessonCourse">Curso<br>
               <select id="newLessonCourse" style="padding:.5rem;border-radius:8px;border:1px solid #ccc;min-width:220px"></select>
             </label>
-            <label>Título de la lección<br>
+            <label for="newLessonTitle">Título de la lección<br>
               <input id="newLessonTitle" type="text" required style="padding:.5rem;border-radius:8px;border:1px solid #ccc;min-width:240px">
             </label>
-            <label>Orden<br>
+            <label for="newLessonPosition">Orden<br>
               <input id="newLessonPosition" type="number" value="1" min="1" style="padding:.5rem;border-radius:8px;border:1px solid #ccc;width:70px">
             </label>
             <button class="btn btn--primary btn--sm" type="submit">Crear lección</button>
@@ -1199,13 +1202,13 @@
           <h3>3. Subir nuevo material</h3>
           <form id="uploadForm" onsubmit="handleUploadMaterial(event)">
             <div style="display:flex;flex-direction:column;gap:.75rem;max-width:480px">
-              <label>Curso / Lección
+              <label for="lessonSelect">Curso / Lección
                 <select id="lessonSelect" style="width:100%;padding:.5rem;border-radius:8px;border:1px solid #ccc"></select>
               </label>
-              <label>Título
+              <label for="materialTitle">Título
                 <input id="materialTitle" type="text" required style="width:100%;padding:.5rem;border-radius:8px;border:1px solid #ccc">
               </label>
-              <label>Tipo
+              <label for="materialType">Tipo
                 <select id="materialType" style="width:100%;padding:.5rem;border-radius:8px;border:1px solid #ccc">
                   <option value="pdf">PDF</option>
                   <option value="video">Video</option>
@@ -1214,13 +1217,13 @@
                   <option value="link">Enlace externo</option>
                 </select>
               </label>
-              <label>Archivo (si no es un enlace externo)
+              <label for="materialFile">Archivo (si no es un enlace externo)
                 <input id="materialFile" type="file" style="width:100%">
               </label>
-              <label>URL externa (si type = enlace)
+              <label for="materialUrl">URL externa (si type = enlace)
                 <input id="materialUrl" type="url" placeholder="https://..." style="width:100%;padding:.5rem;border-radius:8px;border:1px solid #ccc">
               </label>
-              <label>Descripción
+              <label for="materialDescription">Descripción
                 <textarea id="materialDescription" style="width:100%;padding:.5rem;border-radius:8px;border:1px solid #ccc"></textarea>
               </label>
               <button class="btn btn--primary" type="submit">Subir material</button>
@@ -1244,7 +1247,7 @@
 <!-- BADGE UNLOCK MODAL -->
 <div class="badge__modal" id="badgeModal">
   <div class="badge__modal-inner">
-    <div class="badge__modal-seal">♛</div>
+    <div class="badge__modal-seal" aria-hidden="true">♛</div>
     <h3>¡Royal Badge Desbloqueado!</h3>
     <div class="badge__modal-icon" id="badgeModalIcon">🗣️</div>
     <p id="badgeModalName">The Speaker</p>
