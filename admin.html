@@ -3,13 +3,16 @@
 <head>
 <meta charset="UTF-8" />
 <title>Biblioteca - Admin</title>
+<title>Biblioteca - Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
   const SUPABASE_URL     = "https://nuqvqeynhssipmcmebxb.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_WjBgPoBpB1ONRrQh_JSucA_X_cCiDZY";
 
   const supabaseClient   = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  const MATERIALS_BUCKET = "materials"; </script>
+  const MATERIALS_BUCKET = "materials";
+</script>
 <style>
   body { font-family: system-ui, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
   .breadcrumb { margin-bottom: 1rem; color: #555; }
