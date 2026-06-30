@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Biblioteca - Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+  .breadcrumb { margin-bottom: 1rem; color: #555; }
+  .breadcrumb span { cursor: pointer; color: #2563eb; }
+  ul { list-style: none; padding: 0; }
+  li { display: flex; justify-content: space-between; align-items: center; padding: .5rem; border-bottom: 1px solid #eee; }
+  .folder { cursor: pointer; font-weight: 600; }
+  .actions button { margin-left: .5rem; }
+  .toolbar { display: flex; gap: .5rem; margin: 1rem 0; flex-wrap: wrap; }
+  dialog { border-radius: 8px; border: none; padding: 1.5rem; min-width: 300px; }
+  label { display: block; margin-top: .75rem; font-size: .9rem; }
+  input, select { width: 100%; padding: .4rem; margin-top: .25rem; }
+</style>
+</head>
+<body>
+
+<h1>Biblioteca de materiales (Admin)</h1>
+<div class="breadcrumb" id="breadcrumb"></div>
+
+<div class="toolbar">
+  <button onclick="newFolderDialog.showModal()">+ Nueva carpeta</button>
+  <button onclick="uploadFileDialog.showModal()">+ Subir archivo</button>
+  <button onclick="addLinkDialog.showModal()">+ Agregar video/link</button>
+</div>
+
+<ul id="folderList"></ul>
+<ul id="itemList"></ul>
+
+<!-- Dialog: nueva carpeta -->
+<dialog id="newFolderDialog">
+  <h3>Nueva carpeta</h3>
+  <label>Nombre
+    <input id="newFolderName" type="text" />
+  </label>
+  <div class="toolbar">
+    <button onclick="newFolderDialog.close()">Cancelar</button>
+    <button onclick="handleCreateFolder()">Crear</button>
+  </div>
+</dialog>
+
+<!-- Dialog: subir archivo -->
+<dialog id="uploadFileDialog">
+  <h3>Subir archivo</h3>
+  <label>Tipo
+    <select id="uploadType">
+      <option value="pdf">PDF</option>
+      <option value="image">Imagen</option>
+      <option value="audio">Audio</option>
+      <option value="document">Word/PowerPoint</option>
+    </select>
+  </label>
+  <label>Archivo
+    <input id="uploadFile" type="file" />
+  </label>
+  <label>Asociar a lección (opcional, ID)
+    <input id="uploadLessonId" type="text" placeholder="lesson id (opcional)" />
+  </label>
+  <div class="toolbar">
+    <button onclick="uploadFileDialog.close()">Cancelar</button>
+    <button onclick="handleUploadFile()">Subir</button>
+  </div>
+</dialog>
+
+<!-- Dialog: agregar link/video -->
+<dialog id="addLinkDialog">
+  <h3>Agregar video o link externo</h3>
+  <label>Tipo
+    <select id="linkType">
+      <option value="video">Video (YouTube/Vimeo)</option>
+      <option value="link">Link externo</option>
+    </select>
+  </label>
+  <label>Nombre
+    <input id="linkName" type="text" />
+  </label>
+  <label>URL
+    <input id="linkUrl" type="text" placeholder="https://..." />
+  </label>
+  <label>Asociar a lección (opcional, ID)
+    <input id="linkLessonId" type="text" placeholder="lesson id (opcional)" />
+  </label>
+  <div class="toolbar">
+    <button onclick="addLinkDialog.close()">Cancelar</button>
+    <button onclick="handleAddLink()">Agregar</button>
+  </div>
+</dialog>
+
+<script>
+  // ⚠️ Reemplazá con tus valores reales de Supabase
+  const SUPABASE_URL = 'https://TU-PROYECTO.supabase.co';
+  const SUPABASE_ANON_KEY = 'TU-ANON-KEY';
+</script>
+<script src="library.js"></script>
+<script>
+  let currentFolderId = null;
+  let breadcrumbTrail = []; // [{id, name}]
+
+  async function render() {
+    renderBreadcrumb();
+    const folders = await getFolders(currentFolderId);
+    const items = await getItems({ folderId: currentFolderId });
+
+    const folderList = document.getElementById('folderList');
+    folderList.innerHTML = folders.map(f => `
+      <li>
+        <span class="folder" onclick="enterFolder('${f.id}', '${escapeHtml(f.name)}')">📁 ${escapeHtml(f.name)}</span>
+        <span class="actions">
+          <button onclick="handleRenameFolder('${f.id}')">Renombrar</button>
+          <button onclick="handleDeleteFolder('${f.id}')">Borrar</button>
+        </span>
+      </li>
+    `).join('');
+
+    const itemList = document.getElementById('itemList');
+    itemList.innerHTML = items.map(i => `
+      <li>
+        <span onclick='openItem(${JSON.stringify(i)})' style="cursor:pointer">
+          ${iconFor(i.type)} ${escapeHtml(i.name)}
+          ${i.lesson_id ? `<small style="color:#888"> (lección: ${i.lesson_id})</small>` : ''}
+        </span>
+        <span class="actions">
+          <button onclick='handleDeleteItem(${JSON.stringify(i)})'>Borrar</button>
+        </span>
+      </li>
+    `).join('');
+  }
+
+  function iconFor(type) {
+    return { pdf: '📄', video: '🎬', audio: '🎵', image: '🖼️', document: '📝', link: '🔗' }[type] || '📦';
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function renderBreadcrumb() {
+    const el = document.getElementById('breadcrumb');
+    const root = `<span onclick="goToBreadcrumb(-1)">🏠 Raíz</span>`;
+    const rest = breadcrumbTrail.map((b, idx) =>
+      ` / <span onclick="goToBreadcrumb(${idx})">${escapeHtml(b.name)}</span>`
+    ).join('');
+    el.innerHTML = root + rest;
+  }
+
+  function enterFolder(id, name) {
+    breadcrumbTrail.push({ id, name });
+    currentFolderId = id;
+    render();
+  }
+
+  function goToBreadcrumb(idx) {
+    if (idx === -1) {
+      breadcrumbTrail = [];
+      currentFolderId = null;
+    } else {
+      breadcrumbTrail = breadcrumbTrail.slice(0, idx + 1);
+      currentFolderId = breadcrumbTrail[idx].id;
+    }
+    render();
+  }
+
+  async function handleCreateFolder() {
+    const name = document.getElementById('newFolderName').value.trim();
+    if (!name) return;
+    await createFolder(name, currentFolderId);
+    document.getElementById('newFolderName').value = '';
+    newFolderDialog.close();
+    render();
+  }
+
+  async function handleRenameFolder(id) {
+    const newName = prompt('Nuevo nombre:');
+    if (!newName) return;
+    await renameFolder(id, newName.trim());
+    render();
+  }
+
+  async function handleDeleteFolder(id) {
+    if (!confirm('¿Borrar esta carpeta? Las subcarpetas también se borran.')) return;
+    await deleteFolder(id);
+    render();
+  }
+
+  async function handleUploadFile() {
+    const type = document.getElementById('uploadType').value;
+    const fileInput = document.getElementById('uploadFile');
+    const lessonId = document.getElementById('uploadLessonId').value.trim() || null;
+    const file = fileInput.files[0];
+    if (!file) return alert('Elegí un archivo');
+
+    try {
+      await uploadFileItem({ file, type, folderId: currentFolderId, lessonId });
+      fileInput.value = '';
+      document.getElementById('uploadLessonId').value = '';
+      uploadFileDialog.close();
+      render();
+    } catch (e) {
+      alert('Error subiendo archivo: ' + e.message);
+    }
+  }
+
+  async function handleAddLink() {
+    const type = document.getElementById('linkType').value;
+    const name = document.getElementById('linkName').value.trim();
+    const url = document.getElementById('linkUrl').value.trim();
+    const lessonId = document.getElementById('linkLessonId').value.trim() || null;
+    if (!name || !url) return alert('Completá nombre y URL');
+
+    try {
+      await createLinkItem({ name, type, url, folderId: currentFolderId, lessonId });
+      document.getElementById('linkName').value = '';
+      document.getElementById('linkUrl').value = '';
+      document.getElementById('linkLessonId').value = '';
+      addLinkDialog.close();
+      render();
+    } catch (e) {
+      alert('Error agregando link: ' + e.message);
+    }
+  }
+
+  async function handleDeleteItem(item) {
+    if (!confirm(`¿Borrar "${item.name}"?`)) return;
+    await deleteItem(item);
+    render();
+  }
+
+  render();
+</script>
+</body>
+</html>

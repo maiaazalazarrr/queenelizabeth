@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Biblioteca - Docente</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+  .breadcrumb { margin-bottom: 1rem; color: #555; }
+  .breadcrumb span { cursor: pointer; color: #2563eb; }
+  ul { list-style: none; padding: 0; }
+  li { padding: .6rem .5rem; border-bottom: 1px solid #eee; cursor: pointer; }
+  li:hover { background: #f7f7f7; }
+  .folder { font-weight: 600; }
+  .lesson-tag { color: #888; font-size: .85rem; margin-left: .5rem; }
+</style>
+</head>
+<body>
+
+<h1>Biblioteca de materiales</h1>
+<div class="breadcrumb" id="breadcrumb"></div>
+
+<ul id="folderList"></ul>
+<ul id="itemList"></ul>
+
+<script>
+  // ⚠️ Reemplazá con tus valores reales de Supabase
+  const SUPABASE_URL = 'https://TU-PROYECTO.supabase.co';
+  const SUPABASE_ANON_KEY = 'TU-ANON-KEY';
+</script>
+<script src="library.js"></script>
+<script>
+  let currentFolderId = null;
+  let breadcrumbTrail = [];
+
+  async function render() {
+    renderBreadcrumb();
+    const folders = await getFolders(currentFolderId);
+    const items = await getItems({ folderId: currentFolderId });
+
+    document.getElementById('folderList').innerHTML = folders.map(f => `
+      <li class="folder" onclick="enterFolder('${f.id}', '${escapeHtml(f.name)}')">
+        📁 ${escapeHtml(f.name)}
+      </li>
+    `).join('');
+
+    document.getElementById('itemList').innerHTML = items.map(i => `
+      <li onclick='openItem(${JSON.stringify(i)})'>
+        ${iconFor(i.type)} ${escapeHtml(i.name)}
+        ${i.lesson_id ? `<span class="lesson-tag">(lección: ${i.lesson_id})</span>` : ''}
+      </li>
+    `).join('');
+
+    if (folders.length === 0 && items.length === 0) {
+      document.getElementById('itemList').innerHTML = '<li style="cursor:default">No hay materiales en esta carpeta.</li>';
+    }
+  }
+
+  function iconFor(type) {
+    return { pdf: '📄', video: '🎬', audio: '🎵', image: '🖼️', document: '📝', link: '🔗' }[type] || '📦';
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function renderBreadcrumb() {
+    const el = document.getElementById('breadcrumb');
+    const root = `<span onclick="goToBreadcrumb(-1)">🏠 Raíz</span>`;
+    const rest = breadcrumbTrail.map((b, idx) =>
+      ` / <span onclick="goToBreadcrumb(${idx})">${escapeHtml(b.name)}</span>`
+    ).join('');
+    el.innerHTML = root + rest;
+  }
+
+  function enterFolder(id, name) {
+    breadcrumbTrail.push({ id, name });
+    currentFolderId = id;
+    render();
+  }
+
+  function goToBreadcrumb(idx) {
+    if (idx === -1) {
+      breadcrumbTrail = [];
+      currentFolderId = null;
+    } else {
+      breadcrumbTrail = breadcrumbTrail.slice(0, idx + 1);
+      currentFolderId = breadcrumbTrail[idx].id;
+    }
+    render();
+  }
+
+  render();
+</script>
+</body>
+</html>
