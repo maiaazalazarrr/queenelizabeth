@@ -30,6 +30,7 @@ function showPage(pageId) {
   if (pageId === 'dashboard') loadRealStats();
   if (pageId === 'materiales') loadMaterialsPage();
   if (pageId === 'admin') loadAdminLessonOptions();
+  if (pageId === 'comercial') unlockComercial();
 }
 
 function updateNavForPage(pageId) {
@@ -748,6 +749,7 @@ async function handleDeleteMaterial(materialId, filePath) {
    ESTADÍSTICAS REALES — dashboard
 ═══════════════════════════════════════════════════ */
 async function loadRealStats() {
+  const panel = document.getElementById('realStatsPanel');
   const revenueEl = document.getElementById('statRevenue');
   const salesEl = document.getElementById('statSalesCount');
   const studentsEl = document.getElementById('statStudents');
@@ -755,6 +757,15 @@ async function loadRealStats() {
   const topEl = document.getElementById('statTopMaterials');
   const updatedEl = document.getElementById('statsUpdatedAt');
   if (!revenueEl) return;
+
+  // En el schema v2, `sales` solo lo puede leer un admin (RLS).
+  // Si no es admin, ocultamos el panel en vez de mostrar $0 engañoso.
+  if (!CurrentProfile) CurrentProfile = await getCurrentProfile();
+  if (!CurrentProfile || CurrentProfile.role !== 'admin') {
+    if (panel) panel.style.display = 'none';
+    return;
+  }
+  if (panel) panel.style.display = '';
 
   try {
     const stats = await fetchRealStats();
@@ -829,9 +840,10 @@ function applyRoleToDashboard(role) {
     if (el) el.style.display = key === role ? 'block' : 'none';
   });
 
-  // Ocultar del sidebar los enlaces que son solo para alumnos
-  document.querySelectorAll('.sidebar__role-student').forEach(link => {
-    link.style.display = role === 'student' ? '' : 'none';
+  // Mostrar/ocultar enlaces del sidebar según el rol (data-roles="student" | "teacher,admin" | "admin")
+  document.querySelectorAll('.sidebar__link[data-roles]').forEach(link => {
+    const allowed = link.dataset.roles.split(',');
+    link.style.display = allowed.includes(role) ? '' : 'none';
   });
 
   if (role === 'teacher') loadTeacherDashboard();
@@ -853,22 +865,39 @@ async function loadTeacherDashboard() {
   if (!list || !CurrentProfile) return;
   list.innerHTML = '<p style="opacity:.6">Cargando tus cursos…</p>';
   try {
-    const courses = await fetchCoursesForTeacher(CurrentProfile.id);
+    const [courses, studentCount] = await Promise.all([
+      fetchCoursesForTeacher(CurrentProfile.id),
+      fetchTeacherStudentCount(CurrentProfile.id).catch(() => 0),
+    ]);
     document.getElementById('teacherCourseCount').textContent = courses.length;
-    document.getElementById('teacherStudentCount').textContent = '—'; // TODO: sumar cuando exista inscripción por curso
+    document.getElementById('teacherStudentCount').textContent = studentCount;
 
     if (!courses.length) {
-      list.innerHTML = '<p>Todavía no tenés cursos asignados. Pedile a un admin que te asigne uno.</p>';
+      list.innerHTML = `
+        <div class="dash__panel" style="text-align:center;padding:2.5rem 1.5rem">
+          <div style="font-size:2rem;margin-bottom:.5rem">📭</div>
+          <strong style="display:block;color:var(--navy);margin-bottom:.25rem">Todavía no tenés cursos asignados</strong>
+          <p style="opacity:.65;font-size:.85rem">Pedile a un administrador que te asigne un curso desde el Panel de Dirección.</p>
+        </div>`;
       return;
     }
-    list.innerHTML = `<div class="lesson__list">` + courses.map(c => `
-      <div class="lesson__item">
-        <div class="lesson__thumb" role="img" aria-label="Libro">📘</div>
-        <div class="lesson__info">
-          <strong>${escapeHtml(c.title)}</strong>
-          <span>${escapeHtml(c.age_group || '—')} · ${escapeHtml(c.level || '—')}${c.sublevel ? ' · Grado ' + escapeHtml(c.sublevel) : ''}</span>
+
+    const levelColors = { A1: '🟢', A2: '🟢', B1: '🔵', B2: '🔵', C1: '🟣', C2: '🟣' };
+
+    list.innerHTML = `<div class="teacher__courses-grid">` + courses.map(c => `
+      <article class="teacher__course-card">
+        <div class="teacher__course-icon" role="img" aria-label="Libro">📘</div>
+        <h4 class="teacher__course-title">${escapeHtml(c.title)}</h4>
+        <div class="teacher__course-tags">
+          ${c.age_group ? `<span class="teacher__course-tag">${escapeHtml(c.age_group)}</span>` : ''}
+          ${c.level ? `<span class="teacher__course-tag">${levelColors[c.level] || '📗'} ${escapeHtml(c.level)}</span>` : ''}
+          ${c.sublevel ? `<span class="teacher__course-tag">Grado ${escapeHtml(c.sublevel)}</span>` : ''}
         </div>
-      </div>`).join('') + `</div>`;
+        <div class="teacher__course-footer">
+          <span>Curso asignado</span>
+          <a href="#" onclick="showPage('admin');return false;" style="color:var(--gold)">Gestionar →</a>
+        </div>
+      </article>`).join('') + `</div>`;
   } catch (err) {
     list.innerHTML = '<p style="color:var(--red)">⚠ ' + err.message + '</p>';
   }
@@ -924,6 +953,172 @@ async function loadAdminDashboard() {
   } catch (err) {
     container.innerHTML = '<p style="color:var(--red)">⚠ ' + err.message + '</p>';
   }
+}
+
+/* ═══════════════════════════════════════════════════
+   GESTIÓN COMERCIAL — balances, ventas por plan e historial
+   Solo accesible para rol admin.
+═══════════════════════════════════════════════════ */
+let SalesCache = [];
+
+async function unlockComercial() {
+  const gate = document.getElementById('comercialGate');
+  const content = document.getElementById('comercialContent');
+  if (!gate || !content) return;
+
+  if (!CurrentProfile) CurrentProfile = await getCurrentProfile();
+
+  if (CurrentProfile && CurrentProfile.role === 'admin') {
+    gate.style.display = 'none';
+    content.style.display = 'block';
+    loadComercialPage();
+  } else {
+    gate.style.display = 'block';
+    content.style.display = 'none';
+    if (CurrentProfile) showToast('⚠ Esta sección es solo para administradores.');
+  }
+}
+
+async function loadComercialPage() {
+  const tbody = document.getElementById('salesTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="5">Cargando ventas…</td></tr>';
+
+  try {
+    SalesCache = await fetchAllSales();
+    renderComercialBalances(SalesCache);
+    renderChartByPlan(SalesCache);
+    renderChartByMonth(SalesCache);
+    renderSalesTable();
+  } catch (err) {
+    console.error(err);
+    tbody.innerHTML = `<tr><td colspan="5" style="color:var(--red)">⚠ ${escapeHtml(err.message)}</td></tr>`;
+    showToast('⚠ No se pudieron cargar las ventas');
+  }
+}
+
+function renderComercialBalances(sales) {
+  const pagado = sales.filter(s => s.status === 'pagado').reduce((sum, s) => sum + Number(s.amount), 0);
+  const pendiente = sales.filter(s => s.status === 'pendiente').reduce((sum, s) => sum + Number(s.amount), 0);
+  const pagadoCount = sales.filter(s => s.status === 'pagado').length;
+
+  document.getElementById('comRevenuePagado').textContent = fmtMoney(pagado);
+  document.getElementById('comRevenuePendiente').textContent = fmtMoney(pendiente);
+  document.getElementById('comSalesCount').textContent = sales.length;
+  document.getElementById('comAvgTicket').textContent = pagadoCount ? fmtMoney(pagado / pagadoCount) : '$0';
+}
+
+function renderChartByPlan(sales) {
+  const container = document.getElementById('comChartByPlan');
+  if (!container) return;
+  const paid = sales.filter(s => s.status === 'pagado');
+  if (!paid.length) { container.innerHTML = '<p class="barchart__empty">Todavía no hay ventas pagadas.</p>'; return; }
+
+  const byPlan = {};
+  paid.forEach(s => {
+    const key = s.plan_name || 'Sin plan';
+    byPlan[key] = (byPlan[key] || 0) + Number(s.amount);
+  });
+  const entries = Object.entries(byPlan).sort((a, b) => b[1] - a[1]);
+  const max = Math.max(...entries.map(e => e[1]));
+
+  container.innerHTML = entries.map(([plan, total]) => `
+    <div class="barchart__row">
+      <span class="barchart__label">${escapeHtml(plan)}</span>
+      <div class="barchart__track"><div class="barchart__fill" style="width:${max ? (total / max * 100) : 0}%"></div></div>
+      <span class="barchart__value">${fmtMoney(total)}</span>
+    </div>`).join('');
+}
+
+function renderChartByMonth(sales) {
+  const container = document.getElementById('comChartByMonth');
+  if (!container) return;
+  const paid = sales.filter(s => s.status === 'pagado');
+
+  // Últimos 6 meses, incluido el actual
+  const months = [];
+  const now = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push({ key: `${d.getFullYear()}-${d.getMonth()}`, label: d.toLocaleDateString('es-AR', { month: 'short', year: '2-digit' }), total: 0 });
+  }
+  paid.forEach(s => {
+    const d = new Date(s.created_at);
+    const key = `${d.getFullYear()}-${d.getMonth()}`;
+    const bucket = months.find(m => m.key === key);
+    if (bucket) bucket.total += Number(s.amount);
+  });
+
+  if (!paid.length) { container.innerHTML = '<p class="barchart__empty">Todavía no hay ventas pagadas.</p>'; return; }
+
+  const max = Math.max(...months.map(m => m.total), 1);
+  container.innerHTML = months.map(m => `
+    <div class="barchart__row">
+      <span class="barchart__label">${escapeHtml(m.label)}</span>
+      <div class="barchart__track"><div class="barchart__fill" style="width:${(m.total / max * 100)}%"></div></div>
+      <span class="barchart__value">${fmtMoney(m.total)}</span>
+    </div>`).join('');
+}
+
+function renderSalesTable() {
+  const tbody = document.getElementById('salesTableBody');
+  if (!tbody) return;
+
+  const search = (document.getElementById('comSearchInput')?.value || '').trim().toLowerCase();
+  const statusFilter = document.getElementById('comStatusFilter')?.value || '';
+
+  let rows = SalesCache;
+  if (statusFilter) rows = rows.filter(s => s.status === statusFilter);
+  if (search) {
+    rows = rows.filter(s =>
+      (s.student_name || '').toLowerCase().includes(search) ||
+      (s.student_email || '').toLowerCase().includes(search)
+    );
+  }
+
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="5">No hay ventas que coincidan con el filtro.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = rows.map(s => `
+    <tr>
+      <td>
+        <strong>${escapeHtml(s.student_name || '—')}</strong><br/>
+        <span style="font-size:.75rem;opacity:.6">${escapeHtml(s.student_email || '')}</span>
+      </td>
+      <td>${escapeHtml(s.plan_name || '—')}</td>
+      <td class="sales__amount">${fmtMoney(Number(s.amount))}</td>
+      <td>${new Date(s.created_at).toLocaleDateString('es-AR')}</td>
+      <td>
+        <span class="sale-status sale-status--${s.status}">${s.status}</span>
+        <select class="status-select" style="margin-top:.3rem;display:block" onchange="handleUpdateSaleStatus('${s.id}', this.value)">
+          <option value="pendiente" ${s.status === 'pendiente' ? 'selected' : ''}>Pendiente</option>
+          <option value="pagado" ${s.status === 'pagado' ? 'selected' : ''}>Pagado</option>
+          <option value="cancelado" ${s.status === 'cancelado' ? 'selected' : ''}>Cancelado</option>
+        </select>
+      </td>
+    </tr>`).join('');
+}
+
+async function handleUpdateSaleStatus(saleId, newStatus) {
+  try {
+    await updateSaleStatus(saleId, newStatus);
+    const sale = SalesCache.find(s => s.id === saleId);
+    if (sale) sale.status = newStatus;
+    renderComercialBalances(SalesCache);
+    renderChartByPlan(SalesCache);
+    renderChartByMonth(SalesCache);
+    renderSalesTable();
+    showToast(`✓ Venta marcada como "${newStatus}"`);
+  } catch (err) {
+    console.error(err);
+    showToast('⚠ No se pudo actualizar el estado de la venta');
+  }
+}
+
+function fmtMoney(n) {
+  return '$' + Number(n || 0).toLocaleString('es-AR', { maximumFractionDigits: 0 });
 }
 
 // ── Abrir / cerrar modal ─────────────────────────
