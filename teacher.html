@@ -18,10 +18,15 @@
   .breadcrumb { margin-bottom: 1rem; color: #555; }
   .breadcrumb span { cursor: pointer; color: #2563eb; }
   ul { list-style: none; padding: 0; }
-  li { padding: .6rem .5rem; border-bottom: 1px solid #eee; cursor: pointer; }
+  li { display: flex; justify-content: space-between; align-items: center; padding: .6rem .5rem; border-bottom: 1px solid #eee; }
   li:hover { background: #f7f7f7; }
-  .folder { font-weight: 600; }
+  .folder { font-weight: 600; cursor: pointer; }
   .lesson-tag { color: #888; font-size: .85rem; margin-left: .5rem; }
+  .actions button { margin-left: .5rem; }
+  .toolbar { display: flex; gap: .5rem; margin: 1rem 0; flex-wrap: wrap; }
+  dialog { border-radius: 8px; border: none; padding: 1.5rem; min-width: 300px; }
+  label { display: block; margin-top: .75rem; font-size: .9rem; }
+  input, select { width: 100%; padding: .4rem; margin-top: .25rem; }
 </style>
 </head>
 <body>
@@ -29,34 +34,125 @@
 <h1>Biblioteca de materiales</h1>
 <div class="breadcrumb" id="breadcrumb"></div>
 
+<div class="toolbar">
+  <button onclick="newFolderDialog.showModal()">+ Nueva carpeta</button>
+  <button onclick="uploadFileDialog.showModal()">+ Subir archivo</button>
+  <button onclick="addLinkDialog.showModal()">+ Agregar video/link</button>
+</div>
+
 <ul id="folderList"></ul>
 <ul id="itemList"></ul>
+
+<!-- Dialog: nueva carpeta -->
+<dialog id="newFolderDialog">
+  <h3>Nueva carpeta</h3>
+  <label>Nombre
+    <input id="newFolderName" type="text" />
+  </label>
+  <div class="toolbar">
+    <button onclick="newFolderDialog.close()">Cancelar</button>
+    <button onclick="handleCreateFolder()">Crear</button>
+  </div>
+</dialog>
+
+<!-- Dialog: subir archivo -->
+<dialog id="uploadFileDialog">
+  <h3>Subir archivo</h3>
+  <label>Tipo
+    <select id="uploadType">
+      <option value="pdf">PDF</option>
+      <option value="image">Imagen</option>
+      <option value="audio">Audio</option>
+      <option value="document">Word/PowerPoint</option>
+    </select>
+  </label>
+  <label>Archivo
+    <input id="uploadFile" type="file" />
+  </label>
+  <label>Asociar a lección (opcional, ID)
+    <input id="uploadLessonId" type="text" placeholder="lesson id (opcional)" />
+  </label>
+  <div class="toolbar">
+    <button onclick="uploadFileDialog.close()">Cancelar</button>
+    <button id="uploadFileBtn" onclick="handleUploadFile()">Subir</button>
+  </div>
+</dialog>
+
+<!-- Dialog: agregar link/video -->
+<dialog id="addLinkDialog">
+  <h3>Agregar video o link externo</h3>
+  <label>Tipo
+    <select id="linkType">
+      <option value="video">Video (YouTube/Vimeo)</option>
+      <option value="link">Link externo</option>
+    </select>
+  </label>
+  <label>Nombre
+    <input id="linkName" type="text" />
+  </label>
+  <label>URL
+    <input id="linkUrl" type="text" placeholder="https://..." />
+  </label>
+  <label>Asociar a lección (opcional, ID)
+    <input id="linkLessonId" type="text" placeholder="lesson id (opcional)" />
+  </label>
+  <div class="toolbar">
+    <button onclick="addLinkDialog.close()">Cancelar</button>
+    <button onclick="handleAddLink()">Agregar</button>
+  </div>
+</dialog>
 
 <script src="library.js"></script>
 <script>
   let currentFolderId = null;
   let breadcrumbTrail = [];
+  let itemsCache = new Map();
 
   async function render() {
     renderBreadcrumb();
-    const folders = await getFolders(currentFolderId);
-    const items = await getItems({ folderId: currentFolderId });
+    const folderList = document.getElementById('folderList');
+    const itemList = document.getElementById('itemList');
+    folderList.innerHTML = '<li style="cursor:default;color:#888">Cargando…</li>';
+    itemList.innerHTML = '';
 
-    document.getElementById('folderList').innerHTML = folders.map(f => `
-      <li class="folder" onclick="enterFolder('${f.id}', '${escapeHtml(f.name)}')">
-        📁 ${escapeHtml(f.name)}
+    let folders = [];
+    let items = [];
+    try {
+      [folders, items] = await Promise.all([
+        getFolders(currentFolderId),
+        getItems({ folderId: currentFolderId }),
+      ]);
+    } catch (e) {
+      folderList.innerHTML = `<li style="cursor:default;color:#c00">⚠ Error cargando: ${escapeHtml(e.message)}</li>`;
+      return;
+    }
+
+    itemsCache = new Map(items.map(i => [i.id, i]));
+
+    folderList.innerHTML = folders.map(f => `
+      <li>
+        <span class="folder" onclick="enterFolder('${f.id}', '${escapeHtml(f.name)}')">📁 ${escapeHtml(f.name)}</span>
+        <span class="actions">
+          <button onclick="handleRenameFolder('${f.id}')">Renombrar</button>
+          <button onclick="handleDeleteFolder('${f.id}')">Borrar</button>
+        </span>
       </li>
     `).join('');
 
-    document.getElementById('itemList').innerHTML = items.map(i => `
-      <li onclick='openItem(${JSON.stringify(i)})'>
-        ${iconFor(i.type)} ${escapeHtml(i.name)}
-        ${i.lesson_id ? `<span class="lesson-tag">(lección: ${i.lesson_id})</span>` : ''}
+    itemList.innerHTML = items.map(i => `
+      <li>
+        <span onclick="handleOpenItem('${i.id}')" style="cursor:pointer">
+          ${iconFor(i.type)} ${escapeHtml(i.name)}
+          ${i.lesson_id ? `<span class="lesson-tag">(lección: ${escapeHtml(i.lesson_id)})</span>` : ''}
+        </span>
+        <span class="actions">
+          <button onclick="handleDeleteItem('${i.id}')">Borrar</button>
+        </span>
       </li>
     `).join('');
 
-    if (folders.length === 0 && items.length === 0) {
-      document.getElementById('itemList').innerHTML = '<li style="cursor:default">No hay materiales en esta carpeta.</li>';
+    if (!folders.length && !items.length) {
+      itemList.innerHTML = '<li style="cursor:default">No hay materiales en esta carpeta.</li>';
     }
   }
 
@@ -92,6 +188,105 @@
       currentFolderId = breadcrumbTrail[idx].id;
     }
     render();
+  }
+
+  async function handleCreateFolder() {
+    const name = document.getElementById('newFolderName').value.trim();
+    if (!name) return;
+    try {
+      await createFolder(name, currentFolderId);
+      document.getElementById('newFolderName').value = '';
+      newFolderDialog.close();
+      render();
+    } catch (e) {
+      alert('Error creando carpeta: ' + e.message);
+    }
+  }
+
+  async function handleRenameFolder(id) {
+    const newName = prompt('Nuevo nombre:');
+    if (!newName) return;
+    try {
+      await renameFolder(id, newName.trim());
+      render();
+    } catch (e) {
+      alert('Error al renombrar: ' + e.message);
+    }
+  }
+
+  async function handleDeleteFolder(id) {
+    if (!confirm('¿Borrar esta carpeta? Las subcarpetas también se borran.')) return;
+    try {
+      await deleteFolder(id);
+      render();
+    } catch (e) {
+      alert('Error al borrar: ' + e.message);
+    }
+  }
+
+  async function handleUploadFile() {
+    const type = document.getElementById('uploadType').value;
+    const fileInput = document.getElementById('uploadFile');
+    const lessonId = document.getElementById('uploadLessonId').value.trim() || null;
+    const file = fileInput.files[0];
+    if (!file) return alert('Elegí un archivo');
+
+    const btn = document.getElementById('uploadFileBtn');
+    btn.disabled = true;
+    btn.textContent = 'Subiendo…';
+    try {
+      await uploadFileItem({ file, type, folderId: currentFolderId, lessonId });
+      fileInput.value = '';
+      document.getElementById('uploadLessonId').value = '';
+      uploadFileDialog.close();
+      render();
+    } catch (e) {
+      alert('Error subiendo archivo: ' + e.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Subir';
+    }
+  }
+
+  async function handleAddLink() {
+    const type = document.getElementById('linkType').value;
+    const name = document.getElementById('linkName').value.trim();
+    const url = document.getElementById('linkUrl').value.trim();
+    const lessonId = document.getElementById('linkLessonId').value.trim() || null;
+    if (!name || !url) return alert('Completá nombre y URL');
+
+    try {
+      await createLinkItem({ name, type, url, folderId: currentFolderId, lessonId });
+      document.getElementById('linkName').value = '';
+      document.getElementById('linkUrl').value = '';
+      document.getElementById('linkLessonId').value = '';
+      addLinkDialog.close();
+      render();
+    } catch (e) {
+      alert('Error agregando link: ' + e.message);
+    }
+  }
+
+  async function handleOpenItem(id) {
+    const item = itemsCache.get(id);
+    if (!item) return;
+    try {
+      await openItem(item);
+    } catch (e) {
+      alert('Error al abrir el archivo: ' + e.message);
+    }
+  }
+
+  async function handleDeleteItem(id) {
+    const item = itemsCache.get(id);
+    if (!item) return;
+    if (!confirm(`¿Borrar "${item.name}"?`)) return;
+    try {
+      await deleteItem(item);
+      render();
+    } catch (e) {
+      alert('Error al eliminar: ' + e.message);
+    }
   }
 
   render();
