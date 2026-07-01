@@ -1691,3 +1691,106 @@ blockquote { quotes: none; }
 @media (max-width: 520px) {
   .auth__handle { display: block; }
 }
+
+/* ══════════════════════════════════════════
+   PANEL DOCENTE — tarjetas de curso
+══════════════════════════════════════════ */
+.teacher__courses-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+.teacher__course-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 1.25rem;
+  position: relative; overflow: hidden;
+  transition: var(--transition);
+}
+.teacher__course-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--navy-light));
+}
+.teacher__course-card:hover {
+  box-shadow: var(--shadow-sm); transform: translateY(-2px);
+  border-color: rgba(201,168,76,.4);
+}
+.teacher__course-icon {
+  width: 42px; height: 42px; border-radius: var(--radius-sm);
+  background: rgba(201,168,76,.1); color: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; margin-bottom: .85rem;
+}
+.teacher__course-title {
+  font-family: var(--font-serif); font-size: 1.05rem;
+  color: var(--navy); margin-bottom: .5rem; line-height: 1.3;
+}
+.teacher__course-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .75rem; }
+.teacher__course-tag {
+  font-size: .68rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+  padding: .2rem .55rem; border-radius: 50px;
+  background: var(--ivory); color: var(--text-mid);
+  border: 1px solid var(--border);
+}
+.teacher__course-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: .78rem; color: var(--text-muted);
+  padding-top: .75rem; border-top: 1px solid var(--ivory-dark);
+}
+
+/* ══════════════════════════════════════════
+   GESTIÓN COMERCIAL
+══════════════════════════════════════════ */
+.dash__card--comercial .dash__card-value { color: var(--navy); }
+.dash__card--money .dash__card-icon { color: #16a34a; }
+.dash__card--pending .dash__card-icon { color: var(--gold); }
+.dash__card--cancel .dash__card-icon { color: var(--red); }
+
+.comercial__row {
+  display: grid; grid-template-columns: 1.1fr .9fr;
+  gap: 1.5rem; margin-bottom: 1.5rem;
+}
+@media (max-width: 1050px) {
+  .comercial__row { grid-template-columns: 1fr; }
+}
+
+/* Gráfico de barras (CSS puro) */
+.barchart { display: flex; flex-direction: column; gap: .85rem; }
+.barchart__row { display: grid; grid-template-columns: 110px 1fr 70px; align-items: center; gap: .75rem; }
+.barchart__label { font-size: .8rem; color: var(--text-mid); font-weight: 600; }
+.barchart__track {
+  height: 10px; background: var(--ivory); border-radius: 99px; overflow: hidden;
+}
+.barchart__fill {
+  height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  width: 0%; transition: width .8s cubic-bezier(.4,0,.2,1);
+}
+.barchart__value { font-size: .78rem; color: var(--text-muted); text-align: right; font-variant-numeric: tabular-nums; }
+.barchart__empty { font-size: .85rem; color: var(--text-muted); opacity: .7; }
+
+/* Filtros de la tabla de ventas */
+.comercial__filters {
+  display: flex; gap: .5rem; flex-wrap: wrap; align-items: center;
+}
+.comercial__filters select, .comercial__filters input {
+  font-size: .8rem; padding: .4rem .6rem;
+  border-radius: var(--radius-sm); border: 1px solid var(--border);
+  background: var(--white);
+}
+
+/* Estados de venta */
+.sale-status {
+  display: inline-block; padding: .2rem .6rem; border-radius: 50px;
+  font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+}
+.sale-status--pagado    { background: rgba(34,197,94,.12); color: #16a34a; }
+.sale-status--pendiente { background: rgba(201,168,76,.15); color: var(--gold); }
+.sale-status--cancelado { background: rgba(200,16,46,.1);  color: var(--red); }
+
+.status-select {
+  font-size: .78rem; padding: .3rem .5rem;
+  border-radius: var(--radius-sm); border: 1px solid var(--border);
+  background: var(--ivory); cursor: pointer;
+}
+
+/* Reusa .users__table para la tabla de ventas */
+.sales__amount { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--navy); }
