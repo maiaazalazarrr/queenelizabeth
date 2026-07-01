@@ -159,6 +159,7 @@ async function logMaterialEvent(materialId, action = "view") {
     .insert([{
       material_id: materialId,
       action,
+      student_id:    user?.id || null,
       student_name:  user?.email ? user.email.split('@')[0] : "Usuario",
       student_email: user?.email || "anonimo@academy.com"
     }]);
