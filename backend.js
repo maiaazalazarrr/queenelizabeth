@@ -23,22 +23,12 @@ async function signUpUser(email, password, displayName, role = 'student') {
   const { data, error } = await supabaseClient.auth.signUp({
     email,
     password,
-    options: { data: { display_name: displayName } }
+    options: { data: { display_name: displayName, role } }
   });
   if (error) throw error;
-
-  // Crear fila en la tabla profiles
-  if (data.user) {
-    const { error: profileError } = await supabaseClient
-      .from('profiles')
-      .insert([{
-        id: data.user.id,
-        email,
-        display_name: displayName,
-        role
-      }]);
-    if (profileError) console.warn('Perfil no creado:', profileError.message);
-  }
+  // La fila en `profiles` la crea automáticamente el trigger
+  // on_auth_user_created (ver supabase_setup_v2.sql), usando
+  // display_name y role de los metadatos que mandamos arriba.
   return data;
 }
 
