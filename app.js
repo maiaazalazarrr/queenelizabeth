@@ -1,4 +1,4 @@
-//* ═══════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
    QUEEN ELIZABETH ACADEMY — app.js
    Interactions, navigation, gamification, lesson flow
 ═══════════════════════════════════════════════════ */
@@ -838,6 +838,16 @@ function applyRoleToDashboard(role) {
   if (role === 'admin')   loadAdminDashboard();
 }
 
+async function handleAssignTeacher(courseId, teacherId) {
+  try {
+    await assignTeacherToCourse(courseId, teacherId || null);
+    showToast(teacherId ? '✓ Docente asignado' : '✓ Curso marcado sin asignar');
+    loadAdminDashboard();
+  } catch (err) {
+    showToast('⚠ No se pudo asignar el docente');
+  }
+}
+
 async function loadTeacherDashboard() {
   const list = document.getElementById('teacherCoursesList');
   if (!list || !CurrentProfile) return;
@@ -869,13 +879,20 @@ async function loadAdminDashboard() {
   if (!container) return;
   container.innerHTML = '<p style="opacity:.6">Cargando cursos…</p>';
   try {
-    const [grouped, roleCounts] = await Promise.all([
+    const [grouped, roleCounts, allProfiles] = await Promise.all([
       fetchAllCoursesGrouped(),
       fetchProfileCountsByRole(),
+      fetchAllProfiles(),
     ]);
+    const teachers = allProfiles.filter(p => p.role === 'teacher');
 
     document.getElementById('adminTeacherCount').textContent = roleCounts.teacher;
     document.getElementById('adminStudentCount').textContent = roleCounts.student;
+
+    const teacherOptions = (selectedId) => `
+      <option value="">— Sin asignar —</option>
+      ${teachers.map(t => `<option value="${t.id}" ${t.id === selectedId ? 'selected' : ''}>${escapeHtml(t.display_name || t.email)}</option>`).join('')}
+    `;
 
     const ageLabels = { starter: 'Starter', medium: 'Medium', elder: 'Elder', sin_asignar: 'Sin grupo de edad' };
     let totalCourses = 0;
@@ -892,9 +909,9 @@ async function loadAdminDashboard() {
                 <div class="dash__card-icon" role="img" aria-label="Libro">📗</div>
                 <div class="dash__card-info">
                   <span class="dash__card-label">${escapeHtml(c.title)}${c.sublevel ? ' · Grado ' + escapeHtml(c.sublevel) : ''}</span>
-                  <span class="dash__card-value" style="font-size:.95rem">
-                    ${c.profiles?.display_name ? escapeHtml(c.profiles.display_name) : 'Sin docente asignado'}
-                  </span>
+                  <select class="course-teacher-select" data-course-id="${c.id}" onchange="handleAssignTeacher('${c.id}', this.value)" style="margin-top:.35rem;padding:.3rem;border-radius:6px;border:1px solid #ccc;font-size:.85rem">
+                    ${teacherOptions(c.teacher_id)}
+                  </select>
                 </div>
               </div>`).join('')}
           </div>
