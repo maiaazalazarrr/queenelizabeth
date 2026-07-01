@@ -71,7 +71,7 @@
   </label>
   <div class="toolbar">
     <button onclick="uploadFileDialog.close()">Cancelar</button>
-    <button onclick="handleUploadFile()">Subir</button>
+    <button id="uploadFileBtn" onclick="handleUploadFile()">Subir</button>
   </div>
 </dialog>
 
@@ -103,13 +103,29 @@
 <script>
   let currentFolderId = null;
   let breadcrumbTrail = []; // [{id, name}]
+  let itemsCache = new Map(); // id -> item, evita re-incrustar JSON en el HTML
 
   async function render() {
     renderBreadcrumb();
-    const folders = await getFolders(currentFolderId);
-    const items = await getItems({ folderId: currentFolderId });
-
     const folderList = document.getElementById('folderList');
+    const itemList = document.getElementById('itemList');
+    folderList.innerHTML = '<li style="cursor:default;color:#888">Cargando…</li>';
+    itemList.innerHTML = '';
+
+    let folders = [];
+    let items = [];
+    try {
+      [folders, items] = await Promise.all([
+        getFolders(currentFolderId),
+        getItems({ folderId: currentFolderId }),
+      ]);
+    } catch (e) {
+      folderList.innerHTML = `<li style="cursor:default;color:#c00">⚠ Error cargando: ${escapeHtml(e.message)}</li>`;
+      return;
+    }
+
+    itemsCache = new Map(items.map(i => [i.id, i]));
+
     folderList.innerHTML = folders.map(f => `
       <li>
         <span class="folder" onclick="enterFolder('${f.id}', '${escapeHtml(f.name)}')">📁 ${escapeHtml(f.name)}</span>
@@ -120,18 +136,21 @@
       </li>
     `).join('');
 
-    const itemList = document.getElementById('itemList');
     itemList.innerHTML = items.map(i => `
       <li>
-        <span onclick='openItem(${JSON.stringify(i)})' style="cursor:pointer">
+        <span onclick="handleOpenItem('${i.id}')" style="cursor:pointer">
           ${iconFor(i.type)} ${escapeHtml(i.name)}
-          ${i.lesson_id ? `<small style="color:#888"> (lección: ${i.lesson_id})</small>` : ''}
+          ${i.lesson_id ? `<small style="color:#888"> (lección: ${escapeHtml(i.lesson_id)})</small>` : ''}
         </span>
         <span class="actions">
-          <button onclick='handleDeleteItem(${JSON.stringify(i)})'>Borrar</button>
+          <button onclick="handleDeleteItem('${i.id}')">Borrar</button>
         </span>
       </li>
     `).join('');
+
+    if (!folders.length && !items.length) {
+      itemList.innerHTML = '<li style="cursor:default;color:#888">Esta carpeta está vacía.</li>';
+    }
   }
 
   function iconFor(type) {
@@ -171,23 +190,35 @@
   async function handleCreateFolder() {
     const name = document.getElementById('newFolderName').value.trim();
     if (!name) return;
-    await createFolder(name, currentFolderId);
-    document.getElementById('newFolderName').value = '';
-    newFolderDialog.close();
-    render();
+    try {
+      await createFolder(name, currentFolderId);
+      document.getElementById('newFolderName').value = '';
+      newFolderDialog.close();
+      render();
+    } catch (e) {
+      alert('Error creando carpeta: ' + e.message);
+    }
   }
 
   async function handleRenameFolder(id) {
     const newName = prompt('Nuevo nombre:');
     if (!newName) return;
-    await renameFolder(id, newName.trim());
-    render();
+    try {
+      await renameFolder(id, newName.trim());
+      render();
+    } catch (e) {
+      alert('Error al renombrar: ' + e.message);
+    }
   }
 
   async function handleDeleteFolder(id) {
     if (!confirm('¿Borrar esta carpeta? Las subcarpetas también se borran.')) return;
-    await deleteFolder(id);
-    render();
+    try {
+      await deleteFolder(id);
+      render();
+    } catch (e) {
+      alert('Error al borrar: ' + e.message);
+    }
   }
 
   async function handleUploadFile() {
@@ -197,6 +228,9 @@
     const file = fileInput.files[0];
     if (!file) return alert('Elegí un archivo');
 
+    const btn = document.getElementById('uploadFileBtn');
+    btn.disabled = true;
+    btn.textContent = 'Subiendo…';
     try {
       await uploadFileItem({ file, type, folderId: currentFolderId, lessonId });
       fileInput.value = '';
@@ -205,6 +239,9 @@
       render();
     } catch (e) {
       alert('Error subiendo archivo: ' + e.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Subir';
     }
   }
 
@@ -227,10 +264,26 @@
     }
   }
 
-  async function handleDeleteItem(item) {
+  async function handleOpenItem(id) {
+    const item = itemsCache.get(id);
+    if (!item) return;
+    try {
+      await openItem(item);
+    } catch (e) {
+      alert('Error al abrir el archivo: ' + e.message);
+    }
+  }
+
+  async function handleDeleteItem(id) {
+    const item = itemsCache.get(id);
+    if (!item) return;
     if (!confirm(`¿Borrar "${item.name}"?`)) return;
-    await deleteItem(item);
-    render();
+    try {
+      await deleteItem(item);
+      render();
+    } catch (e) {
+      alert('Error al eliminar: ' + e.message);
+    }
   }
 
   render();
