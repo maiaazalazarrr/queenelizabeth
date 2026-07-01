@@ -525,31 +525,34 @@
         <a href="#" class="sidebar__link sidebar__link--active" data-section="overview">
           <span class="sidebar__icon" aria-hidden="true">⊞</span> Resumen
         </a>
-        <a href="#" class="sidebar__link sidebar__role-student" data-section="lessons" onclick="showPage('leccion')">
+        <a href="#" class="sidebar__link" data-section="lessons" data-roles="student" onclick="showPage('leccion')">
           <span class="sidebar__icon" aria-hidden="true">📖</span> Mis Lecciones
         </a>
-        <a href="#" class="sidebar__link sidebar__role-student" data-section="live">
+        <a href="#" class="sidebar__link" data-section="live" data-roles="student">
           <span class="sidebar__icon" aria-hidden="true">🎥</span> Clases en Vivo
         </a>
-        <a href="#" class="sidebar__link sidebar__role-student" data-section="library">
+        <a href="#" class="sidebar__link" data-section="library" data-roles="student">
           <span class="sidebar__icon" aria-hidden="true">🎧</span> Biblioteca
         </a>
         <a href="#" class="sidebar__link" data-section="materiales" onclick="showPage('materiales')">
           <span class="sidebar__icon" aria-hidden="true">📂</span> Materiales
         </a>
-        <a href="#" class="sidebar__link sidebar__role-teacher sidebar__role-admin" data-section="admin" onclick="showPage('admin')">
+        <a href="#" class="sidebar__link" data-section="admin" data-roles="teacher,admin" onclick="showPage('admin')">
           <span class="sidebar__icon" aria-hidden="true">🛠️</span> Panel Docente
+        </a>
+        <a href="#" class="sidebar__link" data-section="comercial" data-roles="admin" onclick="showPage('comercial')">
+          <span class="sidebar__icon" aria-hidden="true">💼</span> Gestión Comercial
         </a>
         <a href="https://classroom.google.com" target="_blank" rel="noopener" class="sidebar__link">
           <span class="sidebar__icon" aria-hidden="true">🔗</span> Ir a Moodle/Classroom
         </a>
-        <a href="#" class="sidebar__link sidebar__role-student" data-section="tutoring">
+        <a href="#" class="sidebar__link" data-section="tutoring" data-roles="student">
           <span class="sidebar__icon" aria-hidden="true">📅</span> Tutorías
         </a>
-        <a href="#" class="sidebar__link sidebar__role-student" data-section="community">
+        <a href="#" class="sidebar__link" data-section="community" data-roles="student">
           <span class="sidebar__icon" aria-hidden="true">💬</span> Comunidad
         </a>
-        <a href="#" class="sidebar__link sidebar__role-student" data-section="badges">
+        <a href="#" class="sidebar__link" data-section="badges" data-roles="student">
           <span class="sidebar__icon" aria-hidden="true">🏅</span> Royal Badges
         </a>
       </nav>
@@ -1243,6 +1246,124 @@
 <!-- ══════════════════════════════════════════
      PANEL DOCENTE (subir y organizar materiales)
 ══════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════════
+     GESTIÓN COMERCIAL (solo admin)
+══════════════════════════════════════════ -->
+<div id="page-comercial" class="page">
+  <div class="dashboard">
+    <aside class="sidebar">
+      <button class="lesson__back" onclick="showPage('dashboard')">← Volver al Dashboard</button>
+    </aside>
+    <main class="dash__main">
+      <div class="dash__header">
+        <div>
+          <h1 class="dash__title">💼 Gestión Comercial</h1>
+          <p class="dash__subtitle">Balances, ventas por plan e historial de pagos (datos reales de Supabase).</p>
+        </div>
+        <button class="btn btn--ghost btn--sm" onclick="loadComercialPage()">↻ Actualizar</button>
+      </div>
+
+      <div id="comercialGate" class="dash__panel">
+        <h3>🔒 Acceso restringido</h3>
+        <p>Esta sección es solo para administradores.</p>
+        <div style="margin-top:1rem;display:flex;gap:.75rem;flex-wrap:wrap">
+          <button class="btn btn--primary btn--sm" onclick="unlockComercial()">Verificar acceso</button>
+          <button class="btn btn--ghost btn--sm" onclick="openAuthModal('login')">Iniciar sesión →</button>
+        </div>
+      </div>
+
+      <div id="comercialContent" style="display:none">
+
+        <!-- BALANCE CARDS -->
+        <div class="dash__cards" id="comercialBalanceCards">
+          <div class="dash__card dash__card--comercial dash__card--money">
+            <div class="dash__card-icon" role="img" aria-label="Dinero">💰</div>
+            <div class="dash__card-info">
+              <span class="dash__card-label">Ingresos confirmados</span>
+              <span class="dash__card-value" id="comRevenuePagado">—</span>
+            </div>
+          </div>
+          <div class="dash__card dash__card--comercial dash__card--pending">
+            <div class="dash__card-icon" role="img" aria-label="Reloj">⏳</div>
+            <div class="dash__card-info">
+              <span class="dash__card-label">Pendiente de cobro</span>
+              <span class="dash__card-value" id="comRevenuePendiente">—</span>
+            </div>
+          </div>
+          <div class="dash__card dash__card--comercial">
+            <div class="dash__card-icon" role="img" aria-label="Factura">🧾</div>
+            <div class="dash__card-info">
+              <span class="dash__card-label">Ventas totales</span>
+              <span class="dash__card-value" id="comSalesCount">—</span>
+            </div>
+          </div>
+          <div class="dash__card dash__card--comercial">
+            <div class="dash__card-icon" role="img" aria-label="Balanza">⚖️</div>
+            <div class="dash__card-info">
+              <span class="dash__card-label">Ticket promedio</span>
+              <span class="dash__card-value" id="comAvgTicket">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- GRÁFICOS -->
+        <div class="comercial__row">
+          <section class="dash__panel">
+            <div class="panel__header">
+              <h3>Ingresos por plan</h3>
+            </div>
+            <div class="barchart" id="comChartByPlan">
+              <p class="barchart__empty">Cargando…</p>
+            </div>
+          </section>
+
+          <section class="dash__panel">
+            <div class="panel__header">
+              <h3>Ingresos últimos 6 meses</h3>
+            </div>
+            <div class="barchart" id="comChartByMonth">
+              <p class="barchart__empty">Cargando…</p>
+            </div>
+          </section>
+        </div>
+
+        <!-- HISTORIAL DE VENTAS -->
+        <section class="dash__panel">
+          <div class="panel__header">
+            <h3>Historial de ventas</h3>
+            <div class="comercial__filters">
+              <input id="comSearchInput" type="text" placeholder="Buscar alumno o email…" oninput="renderSalesTable()" />
+              <select id="comStatusFilter" onchange="renderSalesTable()">
+                <option value="">Todos los estados</option>
+                <option value="pagado">Pagado</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="cancelado">Cancelado</option>
+              </select>
+            </div>
+          </div>
+          <div class="users__table-wrap">
+            <table class="users__table" id="salesTable">
+              <thead>
+                <tr>
+                  <th>Alumno</th>
+                  <th>Plan</th>
+                  <th>Monto</th>
+                  <th>Fecha</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody id="salesTableBody">
+                <tr><td colspan="5">Cargando ventas…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+</div>
+
 <div id="page-admin" class="page">
   <div class="dashboard">
     <aside class="sidebar">
